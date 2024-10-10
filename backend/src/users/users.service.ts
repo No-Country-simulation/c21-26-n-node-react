@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,7 +24,6 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      console.log(hashedPassword);
       const newUser = await this.userModel.create({
         ...createUserDto,
         password: hashedPassword,
@@ -36,26 +39,41 @@ export class UsersService {
     try {
       const user = await this.userModel.findOne({ email: loginUserDto.email });
       if (!user) {
-        throw new HttpException('Invalid credentials', 404);
+        throw new UnauthorizedException('Invalid credentials');
       }
       const isPasswordMatch = await bcrypt.compare(
         loginUserDto.password,
         user.password,
       );
       if (!isPasswordMatch) {
-        throw new HttpException('Invalid credentials', 401);
+        throw new UnauthorizedException('Invalid credentials');
       }
       const payload = {
-        id: user.id,
+        _id: user.id,
         email: user.email,
         username: user.username,
+        role: user.role,
       };
 
       return {
-        access_token: this.JwtService.sign(payload),
-        email: user.email,
-        username: user.username,
+        access_token: await this.JwtService.signAsync(payload),
+        _id: user.id,
+        role: user.role,
       };
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
+  }
+
+  async getProfile(user: any) {
+    try {
+      const result = await this.userModel
+        .findById({ _id: user })
+        .select('-password');
+      if (!result) {
+        throw new HttpException('User not found', 404);
+      }
+      return result;
     } catch (error) {
       throw new HttpException(error.message, 500);
     }
@@ -65,11 +83,21 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    try {
+      const result = await this.userModel
+        .findById({ _id: id })
+        .select('-password');
+      if (!result) {
+        throw new HttpException('User not found', 404);
+      }
+      return result;
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
