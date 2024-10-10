@@ -16,6 +16,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guard/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 interface RequestWithUser extends Request {
   user: { email: string; role: string; _id: string };
@@ -26,6 +27,7 @@ export enum Role {
   Admin = 'admin',
 }
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
