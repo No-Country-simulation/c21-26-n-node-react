@@ -1,8 +1,7 @@
 import { useForm } from "react-hook-form";
-import { registerRequest } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Button, Divider, Link, TextField } from "@mui/material";
 
 function LoginPage() {
   const {
@@ -13,13 +12,10 @@ function LoginPage() {
 
   const { isAuthenticated, errors: authErrors, login } = useAuth();
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (isAuthenticated) {
       alert("You are already logged in");
     }
-    //navigate("/");
   }, [isAuthenticated]);
 
   const onSubmit = handleSubmit(async (values) => {
@@ -27,53 +23,50 @@ function LoginPage() {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-500">
-      <div className="w-full max-w-md">
-        <form
-          className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4"
-          onSubmit={onSubmit}
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-            Login
-          </h2>
-          <div className="mb-4">
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Email"
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col md:flex-row gap-5 border rounded-xl">
+        <div className="w-full md:w-96">
+          <img
+            src="/images/education.webp"
+            alt="education_login"
+            className="h-full object-fill w-full"
+          />
+        </div>
+        <div className="flex flex-col gap-4">
+          <form
+            onSubmit={onSubmit}
+            className="flex flex-col items-center gap-5 px-2 py-3"
+          >
+            <h3 className="text-center font-semibold font-Roboto text-2xl my-4">
+              Iniciar Sesión
+            </h3>
+            <TextField
+              className="w-full md:w-96"
               type="email"
+              error={errors.email ? true : false}
               {...register("email", { required: true })}
+              id="outlined-basic"
+              label={errors.password ? 'Correo electrónico requerido': 'Correo electrónico'}
+              variant="outlined"
             />
-            {errors.email && (
-              <span className="text-red-500 text-xs italic">
-                This field is required
-              </span>
-            )}
-          </div>
-          <div className="mb-4">
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Password"
+            <TextField
+              className="w-full md:w-96"
               type="password"
+              error={errors.password ? true : false}
               {...register("password", { required: true })}
+              id="outlined-basic"
+              label={errors.password ? 'Contraseña requerida': 'Contraseña'}
+              variant="outlined"
             />
-            {errors.password && (
-              <span className="text-red-500 text-xs italic">
-                This field is required
-              </span>
-            )}
+            <Button variant="contained" type="submit">Ingresar</Button>
+          </form>
+          <Divider variant="middle" />
+          <div className="w-full flex flex-col md:flex-row justify-evenly mb-4 items-center">
+          <span >Eres nuevo? <Link href="/register" underline="hover">Registrate</Link> </span>
+          <Divider variant="middle" orientation="vertical" />
+          <Link href="#" underline="hover">Olvidaste tu contraseña? </Link>
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-              type="submit"
-            >
-              Login
-            </button>
-          </div>
-        </form>
-        <p className="text-center text-gray-500 text-xs">
-          &copy;2023 Your Company. All rights reserved.
-        </p>
+        </div>
       </div>
     </div>
   );
