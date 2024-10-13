@@ -1,7 +1,13 @@
-import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Profile() {
-  return <div>Ruta protegida profile</div>;
+  const { logout } = useAuth();
+  return (
+    <div>
+      <div>Ruta protegida profile</div>
+      <button onClick={logout}>Logout</button>
+    </div>
+  );
 }
 
 export default Profile;
