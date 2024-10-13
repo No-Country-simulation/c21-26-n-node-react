@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,8 +17,9 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guard/roles.guard';
-import { ApiTags } from '@nestjs/swagger';
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 interface RequestWithUser extends Request {
   user: { email: string; role: string; _id: string };
 }
@@ -38,8 +40,11 @@ export class UsersController {
   }
 
   @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto) {
-    return await this.usersService.login(loginUserDto);
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return await this.usersService.login(loginUserDto, response);
   }
 
   @Get()
@@ -54,6 +59,13 @@ export class UsersController {
     const userId = request.user;
     console.log(userId._id);
     return this.usersService.getProfile(userId._id);
+  }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('verify')
+  async verify(@Req() request: RequestWithUser) {
+    console.log('front');
+    return this.usersService.verify(request);
   }
 
   @UseGuards(AuthGuard)

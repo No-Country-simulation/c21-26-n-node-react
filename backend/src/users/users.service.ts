@@ -11,19 +11,24 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { access } from 'fs';
 import { UserResponseDto } from './dto/login-response-dto';
-
+import { Response } from 'express';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private JwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      const userFound = await this.userModel.findOne({
+        email: createUserDto.email,
+      });
+      if (userFound) {
+        throw new HttpException('User already exists', 409);
+      }
       const newUser = await this.userModel.create({
         ...createUserDto,
         password: hashedPassword,
@@ -35,7 +40,10 @@ export class UsersService {
     }
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<UserResponseDto> {
+  async login(
+    loginUserDto: LoginUserDto,
+    response: Response,
+  ): Promise<UserResponseDto> {
     try {
       const user = await this.userModel.findOne({ email: loginUserDto.email });
       if (!user) {
@@ -54,9 +62,16 @@ export class UsersService {
         username: user.username,
         role: user.role,
       };
+      const token = await this.jwtService.signAsync(payload);
+
+      response.cookie('token', token, {
+        httpOnly: false, // Solo accesible a través de HTTP (no JavaScript)
+        secure: true,
+        sameSite: 'none', // Asegura que las cookies sean aceptadas en requests cross-site
+      });
 
       return {
-        access_token: await this.JwtService.signAsync(payload),
+        access_token: await this.jwtService.signAsync(payload),
         _id: user.id,
         role: user.role,
       };
@@ -92,6 +107,31 @@ export class UsersService {
         throw new HttpException('User not found', 404);
       }
       return result;
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
+  }
+
+  async verify(request: any) {
+    try {
+      const token = request.cookies?.token;
+      if (!token) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      const resToken = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      const userFound = await this.userModel.findOne({ _id: resToken._id });
+
+      console.log('User found:', userFound);
+      if (!userFound) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      return {
+        _id: userFound._id,
+        email: userFound.email,
+        role: userFound.role,
+      };
     } catch (error) {
       throw new HttpException(error.message, 500);
     }
