@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const api_url = import.meta.env.API_URL
+
 const instance = axios.create({
-  baseURL: "http://localhost:3000/api/users",
+  baseURL: api_url,
   withCredentials: true,
 });
 
