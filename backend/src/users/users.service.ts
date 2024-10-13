@@ -74,6 +74,8 @@ export class UsersService {
         access_token: await this.jwtService.signAsync(payload),
         _id: user.id,
         role: user.role,
+        email: user.email,
+        username: user.username,
       };
     } catch (error) {
       throw new HttpException(error.message, 500);
@@ -131,6 +133,7 @@ export class UsersService {
         _id: userFound._id,
         email: userFound.email,
         role: userFound.role,
+        name: userFound.username,
       };
     } catch (error) {
       throw new HttpException(error.message, 500);
