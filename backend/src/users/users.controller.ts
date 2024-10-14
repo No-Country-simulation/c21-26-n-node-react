@@ -21,7 +21,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 
-
 interface RequestWithUser extends Request {
   user: { email: string; role: string; _id: string };
 }
