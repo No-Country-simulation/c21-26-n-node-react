@@ -13,11 +13,14 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from './dto/login-response-dto';
 import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid'; //
+import { EmailService } from 'src/email/email.service';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -149,5 +152,13 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async forgotPassword(email: string) {
+    const recoveryCode = uuidv4().substring(0, 6);
+
+    await this.emailService.sendRecoveryEmail(email, recoveryCode);
+
+    return { message: 'Correo de recuperación enviado', recoveryCode };
   }
 }
