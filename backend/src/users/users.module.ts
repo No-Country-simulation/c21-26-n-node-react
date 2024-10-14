@@ -6,6 +6,7 @@ import { UserSchema } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt-strategy';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { JwtStrategy } from './jwt/jwt-strategy';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, JwtStrategy],
+  providers: [UsersService, JwtStrategy, EmailService],
 })
 export class UsersModule {}

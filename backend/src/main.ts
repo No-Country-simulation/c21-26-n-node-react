@@ -6,7 +6,10 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction) {
+    app.use('trust proxy', 1); // Solo para producción
+  }
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
     new ValidationPipe({

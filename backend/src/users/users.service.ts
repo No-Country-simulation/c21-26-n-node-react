@@ -64,10 +64,13 @@ export class UsersService {
       };
       const token = await this.jwtService.signAsync(payload);
 
+      const isProduction = process.env.NODE_ENV === 'production';
+      console.log('isProduction:', isProduction);
       response.cookie('token', token, {
-        httpOnly: false, // Solo accesible a través de HTTP (no JavaScript)
-        secure: true,
-        sameSite: 'none', // Asegura que las cookies sean aceptadas en requests cross-site
+        httpOnly: isProduction ? true : false,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        domain: isProduction ? process.env.FRONT_URL : 'localhost', //
       });
 
       return {

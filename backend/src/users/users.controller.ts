@@ -20,6 +20,9 @@ import { RolesGuard } from './guard/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
+import { v4 as uuidv4 } from 'uuid'; //
+import { EmailService } from 'src/email/email.service';
+
 interface RequestWithUser extends Request {
   user: { email: string; role: string; _id: string };
 }
@@ -32,7 +35,10 @@ export enum Role {
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly emailService: EmailService,
+  ) {}
 
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
@@ -45,6 +51,18 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     return await this.usersService.login(loginUserDto, response);
+  }
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    // Generar un código de recuperación
+    const recoveryCode = uuidv4().substring(0, 6); // Ejemplo: generar un código de 6 caracteres
+
+    // Enviar correo electrónico con el código de recuperación
+    await this.emailService.sendRecoveryEmail(email, recoveryCode);
+
+    // Aquí puedes almacenar el código de recuperación en la base de datos si es necesario
+
+    return { message: 'Correo de recuperación enviado', recoveryCode }; // No enviar el código en producción
   }
 
   @Get()
