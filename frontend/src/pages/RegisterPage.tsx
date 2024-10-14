@@ -23,7 +23,7 @@ function RegisterPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     signUp(values);
-    navigate('login',{replace:true})
+    navigate('/login',{replace:true})
   });
 
   return (
@@ -83,7 +83,7 @@ function RegisterPage() {
         </Button>
         <div className="w-full max-w-md">
           <p className="text-center text-gray-500 text-xs">
-            &copy;2024 Eduflex. Todos los derechos reservados.
+            &copy;2024 EduTech. Todos los derechos reservados.
           </p>
         </div>
       </form>
