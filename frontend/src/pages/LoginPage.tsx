@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 import { Button, Divider, Link, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const {
@@ -12,6 +13,8 @@ function LoginPage() {
 
   const { isAuthenticated, errors: authErrors, login } = useAuth();
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     if (isAuthenticated) {
       alert("You are already logged in");
@@ -20,6 +23,7 @@ function LoginPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     login(values);
+    navigate('/',{replace:true})
   });
 
   return (
@@ -45,7 +49,6 @@ function LoginPage() {
               type="email"
               error={errors.email ? true : false}
               {...register("email", { required: true })}
-              id="outlined-basic"
               label={errors.password ? 'Correo electrónico requerido': 'Correo electrónico'}
               variant="outlined"
             />
@@ -54,7 +57,6 @@ function LoginPage() {
               type="password"
               error={errors.password ? true : false}
               {...register("password", { required: true })}
-              id="outlined-basic"
               label={errors.password ? 'Contraseña requerida': 'Contraseña'}
               variant="outlined"
             />
