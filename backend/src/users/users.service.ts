@@ -70,13 +70,13 @@ export class UsersService {
       const isProduction = process.env.NODE_ENV === 'production';
       console.log('isProduction:', isProduction);
       response.cookie('token', token, {
-        httpOnly: true, // La cookie es solo accesible desde el backend
-        secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Acepta requests cruzados en producción
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Solo en producción con HTTPS
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' en desarrollo local para permitir cookies en solicitudes cruzadas
         domain:
           process.env.NODE_ENV === 'production'
-            ? '.tu-dominio.com'
-            : 'localhost', // Asegúrate de que coincida con el dominio de frontend
+            ? 'http://localhost:5173/'
+            : 'localhost', // Asegúrate de que coincida con el dominio del frontend
       });
 
       return {
