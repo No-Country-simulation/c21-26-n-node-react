@@ -5,14 +5,14 @@ function ProtectedRoute() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // Esperar hasta que termine la verificación
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />; // Redirigir a login si no está autenticado
+    return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />; // Mostrar la ruta protegida
+  return <Outlet />;
 }
 
 export default ProtectedRoute;

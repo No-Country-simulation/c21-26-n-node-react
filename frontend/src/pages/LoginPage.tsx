@@ -77,7 +77,7 @@ function LoginPage() {
               </Link>{" "}
             </span>
             <Divider variant="middle" orientation="vertical" />
-            <Link href="#" underline="hover">
+            <Link href="forgot" underline="hover">
               Olvidaste tu contraseña?{" "}
             </Link>
           </div>

@@ -15,6 +15,8 @@ import { UserResponseDto } from './dto/login-response-dto';
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid'; //
 import { EmailService } from 'src/email/email.service';
+import { ResetEmail } from './dto/recovery-email.dto';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -150,11 +152,21 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  async forgotPassword(email: string) {
-    const recoveryCode = uuidv4().substring(0, 6);
+  async forgotPassword(email: ResetEmail) {
+    try {
+      const recoveryCode = uuidv4().substring(0, 6);
+      const user = await this.userModel.findOne({ email: email.email });
+      if (!user) {
+        throw new HttpException('Wrong Email', 404);
+      }
 
-    await this.emailService.sendRecoveryEmail(email, recoveryCode);
+      await this.emailService.sendRecoveryEmail(email.email, recoveryCode);
 
-    return { message: 'Correo de recuperación enviado', recoveryCode };
+      return {
+        message: 'Correo de recuperación enviado',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 }

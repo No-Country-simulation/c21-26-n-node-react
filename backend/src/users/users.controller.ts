@@ -20,6 +20,7 @@ import { RolesGuard } from './guard/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
+import { ResetEmail } from './dto/recovery-email.dto';
 
 interface RequestWithUser extends Request {
   user: { email: string; role: string; _id: string };
@@ -47,8 +48,9 @@ export class UsersController {
   ) {
     return await this.usersService.login(loginUserDto);
   }
+
   @Post('forgot-password')
-  async forgotPassword(@Body('email') email: string) {
+  async forgotPassword(@Body() email: ResetEmail) {
     return await this.usersService.forgotPassword(email);
   }
 
