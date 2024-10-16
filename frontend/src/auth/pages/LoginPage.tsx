@@ -13,7 +13,7 @@ function LoginPage() {
 
   const { isAuthenticated, errors: authErrors, login } = useAuth();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -23,7 +23,7 @@ function LoginPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     login(values);
-    navigate('/',{replace:true})
+    //navigate('/',{replace:true})
   });
 
   return (
@@ -49,7 +49,11 @@ function LoginPage() {
               type="email"
               error={errors.email ? true : false}
               {...register("email", { required: true })}
-              label={errors.password ? 'Correo electrónico requerido': 'Correo electrónico'}
+              label={
+                errors.password
+                  ? "Correo electrónico requerido"
+                  : "Correo electrónico"
+              }
               variant="outlined"
             />
             <TextField
@@ -57,10 +61,12 @@ function LoginPage() {
               type="password"
               error={errors.password ? true : false}
               {...register("password", { required: true })}
-              label={errors.password ? 'Contraseña requerida': 'Contraseña'}
+              label={errors.password ? "Contraseña requerida" : "Contraseña"}
               variant="outlined"
             />
-            <Button variant="contained" type="submit">Ingresar</Button>
+            <Button variant="contained" type="submit">
+              Ingresar
+            </Button>
           </form>
           <Divider variant="middle" />
           <div className="w-full flex flex-col md:flex-row justify-evenly mb-4 items-center">

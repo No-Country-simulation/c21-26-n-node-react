@@ -13,11 +13,14 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from './dto/login-response-dto';
 import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid'; //
+import { EmailService } from 'src/email/email.service';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -40,15 +43,13 @@ export class UsersService {
     }
   }
 
-  async login(
-    loginUserDto: LoginUserDto,
-    response: Response,
-  ): Promise<UserResponseDto> {
+  async login(loginUserDto: LoginUserDto): Promise<UserResponseDto> {
     try {
       const user = await this.userModel.findOne({ email: loginUserDto.email });
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
       const isPasswordMatch = await bcrypt.compare(
         loginUserDto.password,
         user.password,
@@ -56,6 +57,7 @@ export class UsersService {
       if (!isPasswordMatch) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
       const payload = {
         _id: user.id,
         email: user.email,
@@ -64,17 +66,8 @@ export class UsersService {
       };
       const token = await this.jwtService.signAsync(payload);
 
-      const isProduction = process.env.NODE_ENV === 'production';
-      console.log('isProduction:', isProduction);
-      response.cookie('token', token, {
-        httpOnly: isProduction ? true : false,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        domain: isProduction ? process.env.FRONT_URL : 'localhost', //
-      });
-
       return {
-        access_token: await this.jwtService.signAsync(payload),
+        access_token: token, // Enviar el token al frontend
         _id: user.id,
         role: user.role,
         email: user.email,
@@ -119,19 +112,25 @@ export class UsersService {
 
   async verify(request: any) {
     try {
-      const token = request.cookies?.token;
+      const authHeader = request.headers.authorization;
+      if (!authHeader) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const token = authHeader.split(' ')[1];
       if (!token) {
         throw new UnauthorizedException('Unauthorized');
       }
-      const resToken = await this.jwtService.verifyAsync(token, {
+
+      const decodedToken = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
-      const userFound = await this.userModel.findOne({ _id: resToken._id });
+      const userFound = await this.userModel.findOne({ _id: decodedToken._id });
 
-      console.log('User found:', userFound);
       if (!userFound) {
         throw new UnauthorizedException('Unauthorized');
       }
+
       return {
         _id: userFound._id,
         email: userFound.email,
@@ -149,5 +148,13 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async forgotPassword(email: string) {
+    const recoveryCode = uuidv4().substring(0, 6);
+
+    await this.emailService.sendRecoveryEmail(email, recoveryCode);
+
+    return { message: 'Correo de recuperación enviado', recoveryCode };
   }
 }

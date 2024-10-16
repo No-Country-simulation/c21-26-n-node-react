@@ -6,10 +6,10 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const isProduction = process.env.NODE_ENV === 'production';
+  /*   const isProduction = process.env.NODE_ENV === 'production';
   if (isProduction) {
-    app.use('trust proxy', 1); // Solo para producción
-  }
+    app.use('trust proxy', 1);
+  } */
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,7 +28,15 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  app.enableCors({ credentials: true, origin: true });
+  app.enableCors({
+    credentials: true,
+    origin: [
+      'http://localhost:5173',
+      'https://nc-c21-26-n-node-react.onrender.com',
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

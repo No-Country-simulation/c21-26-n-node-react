@@ -7,13 +7,14 @@ function ProtectedRoute() {
   console.log(loading, isAuthenticated);
   
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Esperar hasta que termine la verificación
   }
 
   if (!loading && !isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
   }
-  return <Outlet />;
+
+  return <Outlet />; // Mostrar la ruta protegida
 }
 
 export default ProtectedRoute;
