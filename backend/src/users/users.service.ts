@@ -43,15 +43,13 @@ export class UsersService {
     }
   }
 
-  async login(
-    loginUserDto: LoginUserDto,
-    response: Response,
-  ): Promise<UserResponseDto> {
+  async login(loginUserDto: LoginUserDto): Promise<UserResponseDto> {
     try {
       const user = await this.userModel.findOne({ email: loginUserDto.email });
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
       const isPasswordMatch = await bcrypt.compare(
         loginUserDto.password,
         user.password,
@@ -59,6 +57,7 @@ export class UsersService {
       if (!isPasswordMatch) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
       const payload = {
         _id: user.id,
         email: user.email,
@@ -67,20 +66,8 @@ export class UsersService {
       };
       const token = await this.jwtService.signAsync(payload);
 
-      const isProduction = process.env.NODE_ENV === 'production';
-      console.log('isProduction:', isProduction);
-      response.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Solo en producción con HTTPS
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' en desarrollo local para permitir cookies en solicitudes cruzadas
-        domain:
-          process.env.NODE_ENV === 'production'
-            ? 'http://localhost:5173/'
-            : 'localhost', // Asegúrate de que coincida con el dominio del frontend
-      });
-
       return {
-        access_token: await this.jwtService.signAsync(payload),
+        access_token: token, // Enviar el token al frontend
         _id: user.id,
         role: user.role,
         email: user.email,
@@ -125,19 +112,25 @@ export class UsersService {
 
   async verify(request: any) {
     try {
-      const token = request.cookies?.token;
+      const authHeader = request.headers.authorization;
+      if (!authHeader) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const token = authHeader.split(' ')[1];
       if (!token) {
         throw new UnauthorizedException('Unauthorized');
       }
-      const resToken = await this.jwtService.verifyAsync(token, {
+
+      const decodedToken = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
-      const userFound = await this.userModel.findOne({ _id: resToken._id });
+      const userFound = await this.userModel.findOne({ _id: decodedToken._id });
 
-      console.log('User found:', userFound);
       if (!userFound) {
         throw new UnauthorizedException('Unauthorized');
       }
+
       return {
         _id: userFound._id,
         email: userFound.email,

@@ -45,7 +45,7 @@ export class UsersController {
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return await this.usersService.login(loginUserDto, response);
+    return await this.usersService.login(loginUserDto);
   }
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string) {
@@ -62,14 +62,12 @@ export class UsersController {
   @Get('profile')
   async getProfile(@Req() request) {
     const userId = request.user;
-    console.log(userId._id);
     return this.usersService.getProfile(userId._id);
   }
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('verify')
   async verify(@Req() request: RequestWithUser) {
-    console.log('front');
     return this.usersService.verify(request);
   }
 

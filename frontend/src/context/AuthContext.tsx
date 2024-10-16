@@ -35,44 +35,45 @@ export const AuthProvider = ({ children }) => {
   const login = async (user: LoginUser) => {
     try {
       const res = await loginRequest(user);
+      localStorage.setItem("token", res.data.access_token);
       setIsAuthenticated(true);
       setUser(res.data);
     } catch (error) {
-      if (Array.isArray(error.response.data)) {
-        return setErrors(error.response.data);
-      }
       setErrors([error.response.data]);
     }
   };
 
   const logout = () => {
     Cookies.remove("token");
+    localStorage.removeItem("token");
     setUser(null);
     setIsAuthenticated(false);
   };
 
   useEffect(() => {
     const checkLogin = async () => {
-      const cookies = Cookies.get();
-      console.log("Cookies front", cookies.token);
-      if (!cookies.token) {
+      const token = localStorage.getItem("token");
+      if (!token) {
         setIsAuthenticated(false);
         setLoading(false);
         return;
       }
 
       try {
-        const res = await verifyTokenRequest(cookies.token);
-        console.log(res);
-        if (!res.data) return setIsAuthenticated(false);
-        setIsAuthenticated(true);
-        setUser(res.data);
-        setLoading(false);
+        const res = await verifyTokenRequest(token);
+        if (!res.data) {
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(true);
+          setUser(res.data);
+        }
       } catch (error) {
         setIsAuthenticated(false);
+      } finally {
         setLoading(false);
       }
     };
+
     checkLogin();
   }, []);
 
