@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../shared/context/AuthContext";
 import { useEffect } from "react";
 import { Button, Divider, Link, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -70,16 +70,9 @@ function LoginPage() {
           </form>
           <Divider variant="middle" />
           <div className="w-full flex flex-col md:flex-row justify-evenly mb-4 items-center">
-            <span>
-              Eres nuevo?{" "}
-              <Link href="/register" underline="hover">
-                Registrate
-              </Link>{" "}
-            </span>
-            <Divider variant="middle" orientation="vertical" />
-            <Link href="forgot" underline="hover">
-              Olvidaste tu contraseña?{" "}
-            </Link>
+          <span >Eres nuevo? <Link href="/auth/register" underline="hover">Registrate</Link> </span>
+          <Divider variant="middle" orientation="vertical" />
+          <Link href="#" underline="hover">Olvidaste tu contraseña? </Link>
           </div>
         </div>
       </div>

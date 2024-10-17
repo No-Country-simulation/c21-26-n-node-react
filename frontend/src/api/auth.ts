@@ -1,4 +1,4 @@
-import { LoginUser, RegisterUser, Token } from "../types/authInterfaces";
+import { LoginUser, RegisterUser, Token } from "../shared/types/authInterfaces";
 import axios from "./axios";
 
 export const registerRequest = (user: RegisterUser) =>
