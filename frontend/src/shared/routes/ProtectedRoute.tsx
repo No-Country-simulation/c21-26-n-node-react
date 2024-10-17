@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 function ProtectedRoute() {
   const { isAuthenticated, loading } = useAuth();
@@ -7,14 +8,14 @@ function ProtectedRoute() {
   console.log(loading, isAuthenticated);
   
   if (loading) {
-    return <div>Loading...</div>; // Esperar hasta que termine la verificación
+    return <LoadingSpinner />
   }
 
   if (!loading && !isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
   }
 
-  return <Outlet />; // Mostrar la ruta protegida
+  return <Outlet />;
 }
 
 export default ProtectedRoute;
