@@ -1,23 +1,18 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { HomeRoutes } from "./home/routes/HomeRoutes";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import Profile from "./pages/Profile";
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./ProtectedRoute";
+import { AuthProvider } from "./shared/context/AuthContext";
+import { AuthRoutes } from "./auth/routes/AuthRoutes";
+import { UserRoutes } from "./user/routes/UserRoutes";
 
 export const AppRoutes = () => {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<HomeRoutes />} />
+        <Route path="/auth/*" element={<AuthRoutes />} />
+        <Route path="/user/*" element={<UserRoutes/>}/>
         <Route path="/*" element={<Navigate to="/" />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/Profile" element={<Profile />} />
-        </Route>
-      </Routes>{" "}
+      </Routes>
     </AuthProvider>
   );
 };
