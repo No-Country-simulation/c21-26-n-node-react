@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../shared/context/AuthContext";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, MenuItem, TextField } from "@mui/material";
 
@@ -14,12 +13,6 @@ function RegisterPage() {
   const { signUp, isAuthenticated, errors: AuthErrors } = useAuth();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      alert("You are already logged in");
-    }
-  }, [isAuthenticated]);
 
   const onSubmit = handleSubmit(async (values) => {
     signUp(values);
