@@ -1,6 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { resetPassword } from "../api/auth";
+import { resetPassword } from "../../api/auth";
 function ForgotPassword() {
   const {
     register,

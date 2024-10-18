@@ -70,9 +70,16 @@ function LoginPage() {
           </form>
           <Divider variant="middle" />
           <div className="w-full flex flex-col md:flex-row justify-evenly mb-4 items-center">
-          <span >Eres nuevo? <Link href="/auth/register" underline="hover">Registrate</Link> </span>
-          <Divider variant="middle" orientation="vertical" />
-          <Link href="#" underline="hover">Olvidaste tu contraseña? </Link>
+            <span>
+              Eres nuevo?{" "}
+              <Link href="/auth/register" underline="hover">
+                Registrate
+              </Link>{" "}
+            </span>
+            <Divider variant="middle" orientation="vertical" />
+            <Link href="/auth/forgot" underline="hover">
+              Olvidaste tu contraseña?{" "}
+            </Link>
           </div>
         </div>
       </div>

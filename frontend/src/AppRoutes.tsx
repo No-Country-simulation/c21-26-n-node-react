@@ -10,7 +10,7 @@ export const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<HomeRoutes />} />
         <Route path="/auth/*" element={<AuthRoutes />} />
-        <Route path="/user/*" element={<UserRoutes/>}/>
+        <Route path="/user/*" element={<UserRoutes />} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>
