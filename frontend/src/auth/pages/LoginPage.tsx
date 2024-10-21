@@ -15,15 +15,10 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      alert("You are already logged in");
-    }
-  }, [isAuthenticated]);
 
   const onSubmit = handleSubmit(async (values) => {
     login(values);
-    //navigate('/',{replace:true})
+    navigate('/',{replace:true})
   });
 
   return (

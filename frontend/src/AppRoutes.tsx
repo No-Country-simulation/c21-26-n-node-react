@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { HomeRoutes } from "./home/routes/HomeRoutes";
 import { AuthProvider } from "./shared/context/AuthContext";
 import { AuthRoutes } from "./auth/routes/AuthRoutes";
@@ -8,10 +8,9 @@ export const AppRoutes = () => {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<HomeRoutes />} />
+        <Route path="/*" element={<HomeRoutes />} />
         <Route path="/auth/*" element={<AuthRoutes />} />
-        <Route path="/user/*" element={<UserRoutes />} />
-        <Route path="/*" element={<Navigate to="/" />} />
+        <Route path="/user/*" element={<UserRoutes/>}/>
       </Routes>
     </AuthProvider>
   );

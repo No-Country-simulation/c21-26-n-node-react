@@ -1,30 +1,26 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
   UseGuards,
   Req,
-  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guard/roles.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
-import { ResetEmail } from './dto/recovery-email.dto';
-
-interface RequestWithUser extends Request {
-  user: { email: string; role: string; _id: string };
-}
+import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 export enum Role {
   User = 'user',
@@ -36,55 +32,67 @@ export enum Role {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('register')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Post('login')
-  async login(
-    @Body() loginUserDto: LoginUserDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return await this.usersService.login(loginUserDto);
-  }
-
-  @Post('forgot-password')
-  async forgotPassword(@Body() email: ResetEmail) {
-    return await this.usersService.forgotPassword(email);
-  }
-
+  @ApiOperation({ summary: 'Retrieve all users' })
+  @ApiResponse({ status: 200, description: 'List of users.' })
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Retrieve current user profile' })
+  @ApiResponse({ status: 200, description: 'User profile retrieved.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @UseGuards(AuthGuard, RolesGuard)
-  //@Roles('student', 'teacher', 'father')
   @Get('profile')
   async getProfile(@Req() request) {
     const userId = request.user;
     return this.usersService.getProfile(userId._id);
   }
+
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Verify user JWT token' })
+  @ApiResponse({ status: 200, description: 'Token successfully verified.' })
+  @ApiResponse({ status: 401, description: 'Invalid token or unauthorized.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UseGuards(JwtAuthGuard)
   @Get('verify')
   async verify(@Req() request: RequestWithUser) {
     return this.usersService.verify(request);
   }
 
-  @UseGuards(AuthGuard)
-  @Roles('user')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, description: 'User found.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('teacher')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update user information' })
+  @ApiResponse({ status: 200, description: 'User successfully updated.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @UseGuards(AuthGuard)
+  @Patch('updateuser')
+  update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.usersService.update(request, updateUserDto);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete user by ID' })
+  @ApiResponse({ status: 200, description: 'User successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
