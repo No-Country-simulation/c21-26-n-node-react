@@ -13,3 +13,7 @@ export const verifyTokenRequest = (token: string) =>
       Authorization: `Bearer ${token}`, // Enviar token en el header
     },
   });
+
+export const resetPassword = (email: string) => {
+  axios.post("/users/forgot-password", { email });
+};

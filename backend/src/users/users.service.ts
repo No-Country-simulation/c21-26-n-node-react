@@ -12,9 +12,10 @@ import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from './dto/login-response-dto';
-import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid'; //
 import { EmailService } from 'src/email/email.service';
+import { ResetEmail } from './dto/recovery-email.dto';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -78,7 +79,7 @@ export class UsersService {
     }
   }
 
-  async getProfile(user: any) {
+  async getProfile(user: UserResponseDto) {
     try {
       const result = await this.userModel
         .findById({ _id: user })
@@ -112,6 +113,7 @@ export class UsersService {
 
   async verify(request: any) {
     try {
+      //console.log(request.headers.authorization, 'valido desde el front');
       const authHeader = request.headers.authorization;
       if (!authHeader) {
         throw new UnauthorizedException('Unauthorized');
@@ -142,19 +144,65 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(request: any, updateUserDto: UpdateUserDto) {
+    try {
+      const authHeader = request.headers.authorization;
+      if (!authHeader) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const decodedToken = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      const userFound = await this.userModel.findOne({ _id: decodedToken._id });
+
+      if (!userFound) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      const updateFields: UpdateUserDto = {};
+      if (updateUserDto.password) {
+        updateFields.password = await bcrypt.hash(updateUserDto.password, 10);
+      }
+      console.log(updateUserDto.username, 'dto');
+      if (updateUserDto.username) {
+        updateFields.username = updateUserDto.username;
+      }
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        { _id: decodedToken._id },
+        { $set: updateFields },
+        { new: true },
+      );
+
+      return updatedUser;
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
 
-  async forgotPassword(email: string) {
-    const recoveryCode = uuidv4().substring(0, 6);
+  async forgotPassword(email: ResetEmail) {
+    try {
+      const recoveryCode = uuidv4().substring(0, 6);
+      const user = await this.userModel.findOne({ email: email.email });
+      if (!user) {
+        throw new HttpException('Wrong Email', 404);
+      }
 
-    await this.emailService.sendRecoveryEmail(email, recoveryCode);
+      await this.emailService.sendRecoveryEmail(email.email, recoveryCode);
 
-    return { message: 'Correo de recuperación enviado', recoveryCode };
+      return {
+        message: 'Correo de recuperación enviado',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 }

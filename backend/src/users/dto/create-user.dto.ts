@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 export enum UserRole {
   TEACHER = 'teacher',
   STUDENT = 'student',
-  FATHER = 'father',
+  PARENT = 'PARENT',
 }
 
 export class CreateUserDto {

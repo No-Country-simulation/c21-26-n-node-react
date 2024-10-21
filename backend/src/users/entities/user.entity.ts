@@ -15,7 +15,7 @@ export class User {
 
   @Prop({
     type: String,
-    enum: ['teacher', 'student', 'father'],
+    enum: ['teacher', 'student', 'parent'],
     default: 'student',
   })
   role: string;
