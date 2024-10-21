@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './entities/user.entity';
+import { UserSchema } from './models/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt-strategy';
 import { EmailService } from 'src/email/email.service';
+import { CourseSchema } from 'src/courses/models/courses.schema';
 
 @Module({
   imports: [
@@ -21,7 +22,10 @@ import { EmailService } from 'src/email/email.service';
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'User', schema: UserSchema },
+      { name: 'Course', schema: CourseSchema },
+    ]),
   ],
   controllers: [UsersController],
   providers: [UsersService, JwtStrategy, EmailService],

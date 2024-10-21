@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/users/entities/user.entity';
+import { User, UserDocument } from 'src/users/models/user.schema';
 import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';

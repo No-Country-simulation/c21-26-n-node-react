@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { CoursesService } from './courses.service';
+import { CoursesController } from './courses.controller';
+import { AuthService } from 'src/auth/auth.service';
 import { JwtStrategy } from 'src/users/jwt/jwt-strategy';
+import { EmailService } from 'src/email/email.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/users/models/user.schema';
-import { ConfigService } from '@nestjs/config';
-import { EmailService } from 'src/email/email.service';
-import { CourseSchema } from 'src/courses/models/courses.schema';
+import { CourseSchema } from './models/courses.schema';
 
 @Module({
   imports: [
@@ -25,8 +26,7 @@ import { CourseSchema } from 'src/courses/models/courses.schema';
       { name: 'Course', schema: CourseSchema },
     ]),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, EmailService],
-  exports: [AuthService],
+  controllers: [CoursesController],
+  providers: [CoursesService, AuthService, JwtStrategy, EmailService],
 })
-export class AuthModule {}
+export class CoursesModule {}
