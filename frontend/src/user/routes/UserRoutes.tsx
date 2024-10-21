@@ -8,7 +8,7 @@ export const UserRoutes = () => {
     <Routes>
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/dashboard/:id" element={<DashboardPage/>}/>
+        <Route path="/dashboard" element={<DashboardPage/>}/>
       </Route>
       <Route path="/*" element={<Navigate to="/" />} />
     </Routes>
