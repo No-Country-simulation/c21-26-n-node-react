@@ -61,7 +61,7 @@ function RegisterPage() {
           {...register("role", { required: true })}
           defaultValue="student"
         >
-          <MenuItem key="father" value="father">
+          <MenuItem key="parent" value="parent">
             Padre
           </MenuItem>
           <MenuItem key="student" value="student">
