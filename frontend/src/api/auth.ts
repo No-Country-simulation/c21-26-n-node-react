@@ -2,10 +2,10 @@ import { LoginUser, RegisterUser, Token } from "../shared/types/authInterfaces";
 import axios from "./axios";
 
 export const registerRequest = (user: RegisterUser) =>
-  axios.post(`/users/register`, user);
+  axios.post(`/auth/register`, user);
 
 export const loginRequest = (user: LoginUser) =>
-  axios.post(`/users/login`, user);
+  axios.post(`/auth/login`, user);
 
 export const verifyTokenRequest = (token: string) =>
   axios.get("/users/verify", {
