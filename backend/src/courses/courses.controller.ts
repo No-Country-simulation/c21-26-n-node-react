@@ -15,6 +15,7 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -43,6 +44,16 @@ export class CoursesController {
     return this.coursesService.create(createCourseDto, request);
   }
 
+  @ApiOperation({ summary: 'Assign a course to a student' })
+  @ApiBody({ type: AssignStudentDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Student assigned to course successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden. Only students can assign courses',
+  })
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('student')
   @Post('assign')
@@ -66,7 +77,7 @@ export class CoursesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.coursesService.findOne(+id);
+    return this.coursesService.findOne(id);
   }
 
   @Patch(':id')

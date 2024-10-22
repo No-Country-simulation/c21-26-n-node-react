@@ -93,8 +93,8 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.userModel.find().select('-password').populate('courses');
   }
 
   async findOne(id: string) {

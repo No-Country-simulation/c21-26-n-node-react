@@ -19,6 +19,10 @@ export class CoursesService {
         ...createCourseDto,
         teacher: request.user._id,
       });
+      await this.userModel.updateOne(
+        { _id: request.user._id },
+        { $push: { courses: res._id } },
+      );
       return res.save();
     } catch (error) {
       throw new HttpException(error.message, 500);
@@ -37,6 +41,9 @@ export class CoursesService {
       if (!student) {
         throw new HttpException('Student not found', 404);
       }
+      if (course.students.includes(student._id)) {
+        throw new HttpException('Student already assigned', 400);
+      }
       course.students.push(student._id);
       return await course.save();
     } catch (error) {
@@ -45,11 +52,27 @@ export class CoursesService {
   }
 
   async findAll() {
-    return await this.courseModel.find();
+    try {
+      return await this.courseModel
+        .find()
+        .populate('teacher', '-password')
+        .populate('students', '-password');
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: string) {
+    try {
+      return await this.courseModel
+        .findOne({
+          _id: id,
+        })
+        .select('-password')
+        .populate('teacher');
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
   }
 
   update(id: number, updateCourseDto: UpdateCourseDto) {
