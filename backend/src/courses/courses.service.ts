@@ -79,7 +79,21 @@ export class CoursesService {
     return `This action updates a #${id} course`;
   }
 
-  remove(id: number) {
+  remove(id: string, request: any) {
+    try {
+      const course = this.courseModel.findOne({
+        _id: id,
+      });
+      if (!course) {
+        throw new HttpException('Course not found', 404);
+      }
+      /*  if (course.teacher.toString() !== request.user._id) {
+        throw new HttpException('Unauthorized', 401);
+      } */
+      return this.courseModel.deleteOne({ _id: id });
+    } catch (error) {
+      throw new HttpException(error.message, 500);
+    }
     return `This action removes a #${id} course`;
   }
 }

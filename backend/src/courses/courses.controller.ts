@@ -85,8 +85,10 @@ export class CoursesController {
     return this.coursesService.update(+id, updateCourseDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('teacher')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.coursesService.remove(+id);
+  remove(@Param('id') id: string, @Req() request: Request) {
+    return this.coursesService.remove(id, request);
   }
 }
