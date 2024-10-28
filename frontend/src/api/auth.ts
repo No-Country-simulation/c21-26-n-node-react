@@ -1,4 +1,3 @@
-import { LoginUser, RegisterUser} from "../shared/types/authInterfaces";
 import { FieldValues } from "react-hook-form";
 import { LoginUser, RegisterUser } from "../shared/types/authInterfaces";
 import axios from "./axios";
