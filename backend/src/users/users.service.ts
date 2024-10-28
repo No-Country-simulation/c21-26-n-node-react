@@ -101,7 +101,8 @@ export class UsersService {
     try {
       const result = await this.userModel
         .findById({ _id: id })
-        .select('-password');
+        .select('-password')
+        .populate('courses');
       if (!result) {
         throw new HttpException('User not found', 404);
       }

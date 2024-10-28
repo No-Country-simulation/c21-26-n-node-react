@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../shared/context/AuthContext";
-import { useEffect } from "react";
 import { Button, Divider, Link, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -11,14 +10,13 @@ function LoginPage() {
     formState: { errors },
   } = useForm();
 
-  const { isAuthenticated, errors: authErrors, login } = useAuth();
+  const { login } = useAuth();
 
   const navigate = useNavigate();
 
-
   const onSubmit = handleSubmit(async (values) => {
     login(values);
-    navigate('/',{replace:true})
+    navigate("/", { replace: true });
   });
 
   return (

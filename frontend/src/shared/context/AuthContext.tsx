@@ -1,9 +1,23 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { loginRequest, registerRequest, verifyTokenRequest } from "../../api/auth";
+import {
+  loginRequest,
+  registerRequest,
+  verifyTokenRequest,
+} from "../../api/auth";
 import Cookies from "js-cookie";
 import { LoginUser, RegisterUser } from "../types/authInterfaces";
 
-export const AuthContext = createContext();
+interface AuthContextType {
+  signUp: (user: RegisterUser) => Promise<void>;
+  login: (user: LoginUser) => Promise<void>;
+  logout: () => void;
+  user: any; // Puedes reemplazar `any` con el tipo correcto si tienes más información sobre el usuario
+  isAuthenticated: boolean;
+  errors: string[];
+  loading: boolean;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

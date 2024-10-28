@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EmailService } from './email/email.service';
 import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CoursesModule } from './courses/courses.module';
     MongooseModule.forRoot(process.env.MONGO_DB),
     AuthModule,
     CoursesModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService, EmailService],

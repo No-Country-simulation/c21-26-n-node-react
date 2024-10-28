@@ -68,8 +68,8 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'User found.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('teacher')
+  //@UseGuards(AuthGuard, RolesGuard)
+  //  @Roles('teacher')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

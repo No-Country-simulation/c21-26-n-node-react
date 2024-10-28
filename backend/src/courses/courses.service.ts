@@ -45,6 +45,8 @@ export class CoursesService {
         throw new HttpException('Student already assigned', 400);
       }
       course.students.push(student._id);
+      student.courses.push(course._id);
+      await student.save();
       return await course.save();
     } catch (error) {
       throw new HttpException(error.message, 500);
@@ -64,12 +66,16 @@ export class CoursesService {
 
   async findOne(id: string) {
     try {
-      return await this.courseModel
+      const res = await this.courseModel
         .findOne({
           _id: id,
         })
         .select('-password')
         .populate('teacher');
+      if (!res) {
+        throw new HttpException('Course not found', 404);
+      }
+      return res;
     } catch (error) {
       throw new HttpException(error.message, 500);
     }
