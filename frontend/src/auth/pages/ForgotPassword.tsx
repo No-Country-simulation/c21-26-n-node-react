@@ -1,15 +1,20 @@
 import { Button, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { resetPassword } from "../../api/auth";
+import { RecoveryUser } from "../../shared/types/authInterfaces";
+import { useNavigate } from "react-router-dom";
 function ForgotPassword() {
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<RecoveryUser>();
 
-  const onSubmit = handleSubmit(async (values) => {
-    resetPassword(values);
+  const onSubmit = handleSubmit(async ({email}:RecoveryUser) => {
+    resetPassword(email);
+    navigate('/auth/login', {replace:true})
   });
 
   return (

@@ -14,7 +14,7 @@ function Profile() {
             className="rounded-full shadow-lg w-52"
           />
           <h3 className="text-center uppercase text-xl text-red-500 font-semibold">
-            {user?.name}
+            {user?.username}
           </h3>
           <Button variant="contained" color="warning">
             Enviar mensaje
@@ -24,15 +24,15 @@ function Profile() {
           <span>Información del usuario:</span>
           <h1 className="text-lg">
             <span className="font-semibold text-blue-400">
-              {user.role == "student"
+              {user?.role == "student"
                 ? "Estudiante"
-                : user.role == "teacher"
+                : user?.role == "teacher"
                 ? "Profesor"
                 : "Padre"}
             </span>
           </h1>
           <h1 className="text-lg">
-            <span className="font-semibold text-blue-400">{user.email}</span>
+            <span className="font-semibold text-blue-400">{user?.email}</span>
           </h1>
           <Button variant="contained" color="primary" className="w-52">
             Ver calificaciones

@@ -1,9 +1,23 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { loginRequest, registerRequest, verifyTokenRequest } from "../../api/auth";
 import Cookies from "js-cookie";
 import { LoginUser, RegisterUser } from "../types/authInterfaces";
+import { User } from "../types/userInterfaces";
 
-export const AuthContext = createContext();
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  errors: string[];
+  loading: boolean;
+  signUp: (user: RegisterUser) => Promise<void>;
+  login: (user: LoginUser) => Promise<void>;
+  logout: () => void;
+}
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -13,22 +27,20 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const signUp = async (user: RegisterUser) => {
+    setLoading(true)
     try {
       const res = await registerRequest(user);
-
       setUser(res.data);
-
-      console.log(res.data);
-    } catch (error) {
+      setLoading(false)
+    } catch (error:any) {
       setErrors(error.response.data);
-      console.log(error.response.data);
     }
   };
 
@@ -38,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", res.data.access_token);
       setIsAuthenticated(true);
       setUser(res.data);
-    } catch (error) {
+    } catch (error:any) {
       setErrors([error.response.data]);
     }
   };

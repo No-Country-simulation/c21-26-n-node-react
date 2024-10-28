@@ -2,19 +2,20 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../shared/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button, MenuItem, TextField } from "@mui/material";
+import { RegisterUser } from "../../shared/types/authInterfaces";
 
 function RegisterPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<RegisterUser>();
 
-  const { signUp, isAuthenticated, errors: AuthErrors } = useAuth();
+  const { signUp} = useAuth();
 
   const navigate = useNavigate();
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit(async (values:RegisterUser) => {
     signUp(values);
     navigate('/auth/login',{replace:true})
   });

@@ -1,29 +1,31 @@
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../shared/context/AuthContext";
-import { useEffect } from "react";
 import { Button, Divider, Link, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { LoginUser } from "../../shared/types/authInterfaces";
 
 function LoginPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<LoginUser>();
 
-  const { isAuthenticated, errors: authErrors, login } = useAuth();
+  const { isAuthenticated , login } = useAuth();
 
   const navigate = useNavigate();
 
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit(async (values:LoginUser) => {
     login(values);
-    navigate('/',{replace:true})
+    if(isAuthenticated){
+      navigate('/courses',{replace:true})
+    }
   });
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="flex flex-col md:flex-row gap-5 border rounded-xl">
+      <div className="flex flex-col px-5 md:px-0 md:flex-row gap-5 border rounded-xl">
         <div className="w-full md:w-96">
           <img
             src="/images/education.webp"
