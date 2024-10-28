@@ -66,7 +66,7 @@ export class User {
   parents: User[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] })
-  courses?: Course; // Los cursos de este usuario (profesor)
+  courses?: Course[]; // Los cursos de este usuario (profesor)
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
