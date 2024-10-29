@@ -11,7 +11,7 @@ export const loginRequest = (user: LoginUser) =>
 export const verifyTokenRequest = (token: string) =>
   axios.get("/users/verify", {
     headers: {
-      Authorization: `Bearer ${token}`, // Enviar token en el header
+      Authorization: `Bearer ${token}`
     },
   });
 

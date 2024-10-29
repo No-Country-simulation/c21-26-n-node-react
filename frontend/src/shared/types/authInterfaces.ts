@@ -10,6 +10,10 @@ export interface RegisterUser {
   role: string;
 }
 
+export interface RecoveryUser{
+  email:string
+}
+
 export interface Token {
   token: string;
 }
