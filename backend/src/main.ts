@@ -33,6 +33,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'https://nc-c21-26-n-node-react.onrender.com',
+      'https://no-country-beta.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
