@@ -1,16 +1,49 @@
 import { useEffect, useState } from "react";
 import { Course } from "../../shared/types/courseInterfaces";
-import { getCourseById } from "../../api/course";
-import { useParams } from "react-router-dom";
+import { assignCourse, getCourseById } from "../../api/course";
+import { useNavigate, useParams } from "react-router-dom";
 import { FiClock, FiUser, FiBook } from "react-icons/fi";
-import { Card, CardContent, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../../shared/context/AuthContext";
+import axios from "axios";
 
 export const CourseDetails = () => {
-  const { user } = useAuth()
+  const navigate = useNavigate()
+  const { user } = useAuth();
+  const [open, setOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [course, setCourse] = useState<Course>();
   const { id } = useParams();
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleInscription = async (id: string) => {
+    try {
+      const response = await assignCourse(id);
+      navigate('/courses', { state: { status: response.status, message: 'Curso asignado con éxito' } });
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        const status = error.response?.status || 500; // Si no hay status, se asigna 500 por defecto
+        navigate('/courses', { state: { status, message: 'Ya estás inscrito en este curso' } });
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,8 +74,42 @@ export const CourseDetails = () => {
 
   return (
     <>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" className="px-10">
+          {"Inscripción al curso en proceso"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" className="px-10">
+            Estas seguro de enrolarte a este curso, es posible que si no tienes
+            las bases necesarias este pueda tener un nivel demasiado alto para
+            ti.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className="flex flex-row justify-center items-center">
+          <Button
+            variant="contained"
+            onClick={() => handleInscription(id!)}
+          >
+            Inscribirse
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleClose}
+            autoFocus
+          >
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
       {!isLoading && (
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="max-w-4xl my-16 mx-auto p-6">
           <h1 className="text-3xl font-bold mb-4 text-center">
             {course?.title}
           </h1>
@@ -116,18 +183,21 @@ export const CourseDetails = () => {
             </span>
           </div>
 
-          <div className="flex flex-row gap-20 items-center justify-center">
+          <div className="flex flex-row gap-5 md:gap-20 items-center justify-center">
             <a
               href="/courses"
               className="bg-red-500 hover:bg-red-500/90 text-primary-foreground font-bold py-2 px-4 rounded"
             >
               Volver
             </a>
-            {
-              user?.role == 'student' && <button className="bg-blue-600 hover:bg-blue-600/90 text-primary-foreground font-bold py-2 px-4 rounded">
-              Inscribirse
-            </button>
-            }
+            {user?.role == "student" && (
+              <button
+                className="bg-blue-600 hover:bg-blue-600/90 text-primary-foreground font-bold py-2 px-4 rounded"
+                onClick={() => handleClickOpen()}
+              >
+                Inscribirse
+              </button>
+            )}
           </div>
         </div>
       )}

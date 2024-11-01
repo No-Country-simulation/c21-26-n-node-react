@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { getCourses } from "../../api/course";
 import { Course } from "../../shared/types/courseInterfaces";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Alert, Card, CardContent, Typography } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+
+interface MessageData{
+  status:number;
+  message:string;
+}
 
 const NivelDificultad = ({ nivel }: { nivel: string }) => {
   const color =
@@ -22,7 +28,7 @@ const NivelDificultad = ({ nivel }: { nivel: string }) => {
 const CursoCardFeatured = ({ curso }: { curso: Course }) => (
   <a
     href={`/courses/details/${curso._id}`}
-    className="bg-white w-[500px] rounded-lg shadow-md overflow-hidden"
+    className="bg-white w-full md:w-[500px] rounded-lg shadow-md overflow-hidden"
   >
     <img
       src={curso.images[0]}
@@ -120,10 +126,18 @@ const CursoCard = ({ curso }: { curso: Course }) => (
 );
 
 export const CoursesPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate()
+  const [alertMessage, setAlertMessage] = useState<MessageData | null>();
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [courses, setCourses] = useState<Course[]>([]);
   useEffect(() => {
+    if (location.state) {
+      setAlertMessage(location.state);
+      navigate(location.pathname,{replace:true})
+    }
     setIsLoading(true);
     const getAllCourses = async () => {
       const response = await getCourses();
@@ -131,7 +145,7 @@ export const CoursesPage = () => {
       setIsLoading(false);
     };
     getAllCourses();
-  }, []);
+  }, [location.pathname, location.state, navigate]);
 
   if (isLoading) {
     return (
@@ -153,7 +167,12 @@ export const CoursesPage = () => {
   return (
     <>
       {!isLoading && (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto mt-8 px-4 py-8">
+          {alertMessage && (
+            <Alert onClose={() => setAlertMessage(null)} severity={ alertMessage.status === 500 ? "error" : 'success'}>
+              {alertMessage.message}
+            </Alert>
+          )}
           <h1 className="text-4xl font-bold mb-8 text-center">
             Nuestros Cursos
           </h1>
