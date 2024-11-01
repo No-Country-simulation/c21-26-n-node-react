@@ -20,11 +20,15 @@ function RegisterPage() {
     navigate('/auth/login',{replace:true})
   });
 
+  const goHome = ()=> {
+    navigate('/',{replace:true})
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-300">
+    <div className="min-h-screen flex px-10 md:px-0 items-center justify-center bg-gray-300">
       <form
         onSubmit={onSubmit}
-        className="flex flex-col gap-5 px-4 py-2 border items-center bg-white rounded-xl"
+        className="w-full md:w-auto flex flex-col gap-5 px-4 py-2 border items-center bg-white rounded-xl"
       >
         <h3 className="text-center font-semibold font-Roboto text-2xl my-4">
           Formulario de registro
@@ -72,9 +76,14 @@ function RegisterPage() {
             Profesor
           </MenuItem>
         </TextField>
+        <div className="flex flex-row items-center justify-center gap-4">
         <Button variant="contained" type="submit">
           Registrar
         </Button>
+         <Button variant="contained" color="error" onClick={()=>goHome()}>
+          Cancelar
+        </Button>
+        </div>
         <div className="w-full max-w-md">
           <p className="text-center text-gray-500 text-xs">
             &copy;2024 EduTech. Todos los derechos reservados.

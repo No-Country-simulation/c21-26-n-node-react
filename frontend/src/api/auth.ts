@@ -1,4 +1,3 @@
-import { FieldValues } from "react-hook-form";
 import { LoginUser, RegisterUser } from "../shared/types/authInterfaces";
 import axios from "./axios";
 
@@ -15,7 +14,6 @@ export const verifyTokenRequest = (token: string) =>
     },
   });
 
-export const resetPassword = (values: FieldValues) => {
-  const email = values.email;
+export const resetPassword = (email: string) => {
   axios.post("/users/forgot-password", { email });
 };

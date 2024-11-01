@@ -76,10 +76,13 @@ import {
   Paper,
   useTheme,
 } from "@mui/material";
-import { Mail, Edit, School, Person, Logout } from "@mui/icons-material";
+import { Mail, Edit, School, Person, Logout, Home, BackHandOutlined } from "@mui/icons-material";
 import { useAuth } from "../../shared/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { GiReturnArrow } from "react-icons/gi";
 
 function Profile() {
+  const navigate = useNavigate()
   const { user, logout } = useAuth();
   const theme = useTheme();
 
@@ -255,6 +258,36 @@ function Profile() {
                   }}
                 >
                   <Typography variant="h4" fontWeight="bold" color="primary">
+                    15
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Cursos Inscritos
+                  </Typography>
+                </Paper>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    textAlign: "center",
+                    bgcolor: theme.palette.grey[50],
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" color="primary">
+                    3
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Cursos Faltantes
+                  </Typography>
+                </Paper>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    textAlign: "center",
+                    bgcolor: theme.palette.grey[50],
+                  }}
+                >
+                  <Typography variant="h4" fontWeight="bold" color="primary">
                     98%
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -270,16 +303,25 @@ function Profile() {
             bgcolor: theme.palette.grey[50],
             p: 2,
             borderTop: `1px solid ${theme.palette.divider}`,
+            alignContent: 'center',
+            justifyContent: 'center'
           }}
         >
           <Button
             variant="contained"
             color="error"
-            fullWidth
             startIcon={<Logout />}
             onClick={logout}
           >
             Cerrar sesión
+          </Button>
+          <Button
+            variant="contained"
+            color="info"
+            startIcon={<GiReturnArrow />}
+            onClick={()=>navigate('/courses',{replace:true})}
+          >
+            Volver al inicio
           </Button>
         </CardActions>
       </Card>
