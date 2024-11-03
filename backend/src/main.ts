@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  /*   const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction) {
+    app.use('trust proxy', 1);
+  } */
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
     new ValidationPipe({
@@ -12,6 +18,26 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(3000);
+  app.use(cookieParser());
+  const config = new DocumentBuilder()
+    .setTitle('EduFlex API')
+    .setDescription('EduFlex Api Api Description')
+    .setVersion('1.0')
+    .addTag('docs')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+  app.enableCors({
+    credentials: true,
+    origin: [
+      'http://localhost:5173',
+      'https://nc-c21-26-n-node-react.onrender.com',
+      'https://no-country-beta.vercel.app',
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
